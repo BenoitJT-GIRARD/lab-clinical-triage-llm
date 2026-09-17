@@ -3,7 +3,7 @@
 Sous Windows, importer `torch` avant `pyarrow` provoque un conflit de
 bibliothèques dynamiques qui termine le processus par une violation d'accès.
 L'ordre d'import dépend ici de l'ordre des tests, donc du hasard. On force donc
-le bon ordre au démarrage de la session, comme le fait `chsa_triage.bootstrap`
+le bon ordre au démarrage de la session, comme le fait `clinical_triage.bootstrap`
 pour les scripts.
 """
 

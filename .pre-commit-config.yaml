@@ -29,5 +29,5 @@ repos:
     rev: 1.9.4
     hooks:
       - id: bandit
-        args: ["-c", "pyproject.toml", "-r", "src/chsa_triage"]
+        args: ["-c", "pyproject.toml", "-r", "src/clinical_triage"]
         additional_dependencies: ["bandit[toml]"]

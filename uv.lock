@@ -436,7 +436,7 @@ wheels = [
 ]
 
 [[package]]
-name = "chsa-triage"
+name = "clinical-triage"
 version = "1.0.0"
 source = { editable = "." }
 dependencies = [

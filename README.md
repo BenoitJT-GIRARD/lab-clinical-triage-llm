@@ -1,6 +1,6 @@
-# Agent IA de triage médical — CHSA
+# Agent IA de triage médical — the emergency department
 
-[![CI](https://github.com/BenoitJT-GIRARD/chsa-triage/actions/workflows/ci.yml/badge.svg)](https://github.com/BenoitJT-GIRARD/chsa-triage/actions/workflows/ci.yml)
+[![CI](https://github.com/BenoitJT-GIRARD/clinical-triage/actions/workflows/ci.yml/badge.svg)](https://github.com/BenoitJT-GIRARD/clinical-triage/actions/workflows/ci.yml)
 [![Licence MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](pyproject.toml)
 
@@ -35,8 +35,8 @@ deux : un agent d'aide à la décision doit rendre son désaccord visible.
 ## Ce que ce dépôt contient
 
 ```
-chsa/
-├── src/chsa_triage/
+triage/
+├── src/clinical_triage/
 │   ├── config.py            # chemins, graines, hyperparamètres — source unique
 │   ├── prompts.py           # format de dialogue, partagé par toutes les étapes
 │   ├── inference.py         # chargement du modèle et génération
@@ -61,10 +61,10 @@ servir le modèle avec vLLM.
 
 ```bash
 uv sync
-uv run chsa-triage        # état du projet et de la configuration
+uv run clinical-triage        # état du projet et de la configuration
 
 # Noyau Jupyter du projet, utilisé par les notebooks.
-uv run python -m ipykernel install --user --name chsa-triage --display-name "Python (chsa-triage)"
+uv run python -m ipykernel install --user --name clinical-triage --display-name "Python (clinical-triage)"
 ```
 
 Sur un poste dont le répertoire personnel est synchronisé dans le nuage, placer
@@ -72,28 +72,28 @@ l'environnement et les caches ailleurs : les téléchargements se comptent en
 gigaoctets.
 
 ```bash
-export UV_PROJECT_ENVIRONMENT=~/.local/share/chsa-triage/venv
-export HF_HOME=~/.local/share/chsa-triage/hf
+export UV_PROJECT_ENVIRONMENT=~/.local/share/clinical-triage/venv
+export HF_HOME=~/.local/share/clinical-triage/hf
 # Le suivi d'expériences écrit dans une base SQLite : un client de
 # synchronisation qui la recopie pendant l'écriture interrompt la création
 # du schéma.
-export MLFLOW_TRACKING_URI="sqlite:///$HOME/.local/share/chsa-triage/mlflow.db"
+export MLFLOW_TRACKING_URI="sqlite:///$HOME/.local/share/clinical-triage/mlflow.db"
 ```
 
 ## Le pipeline, dans l'ordre
 
 ```bash
-uv run python scripts/01_build_dataset.py         # dataset bilingue et jeu d'évaluation
-uv run python scripts/02_tune_hyperparameters.py  # comparaison des configurations
-uv run python scripts/03_train_sft.py             # fine-tuning supervisé
-uv run python scripts/04_merge_and_export.py --adapter sft
-uv run python scripts/05_train_dpo.py             # alignement par préférences
-uv run python scripts/04_merge_and_export.py --adapter dpo
-uv run python scripts/06_evaluate.py              # évaluation comparée aux références
-docker compose -f deploy/docker-compose.yml up    # endpoint vLLM + passerelle
-uv run python scripts/07_benchmark_endpoint.py --api-key "$TRIAGE_API_KEY"  # latence et débit
-uv run python scripts/08_publish_hf.py --what tout
-uv run python scripts/09_build_report.py          # figures + rapport technique
+uv run python scripts/build_dataset.py         # dataset bilingue et jeu d'évaluation
+uv run python scripts/tune_hyperparameters.py  # comparaison des configurations
+uv run python scripts/train_sft.py             # fine-tuning supervisé
+uv run python scripts/merge_adapter.py --adapter sft
+uv run python scripts/train_dpo.py             # alignement par préférences
+uv run python scripts/merge_adapter.py --adapter dpo
+uv run python scripts/run_evaluation.py              # évaluation comparée aux références
+docker compose -f infra/docker-compose.yml up    # endpoint vLLM + passerelle
+uv run python scripts/benchmark_endpoint.py --api-key "$TRIAGE_API_KEY"  # latence et débit
+uv run python scripts/publish_to_hub.py --what tout
+uv run python scripts/build_figures.py          # figures + rapport technique
 uv run python scripts/10_build_slides.py          # support de soutenance
 uv run python scripts/11_package_deliverable.py   # archive de livrables
 ```
@@ -145,7 +145,7 @@ jetons. Détail et mesures dans le rapport technique.
 |---|---|---|
 | Ruff | style et format | `uv run ruff check .` · `uv run ruff format .` |
 | Pytest | tests et couverture | `uv run pytest` |
-| Bandit | analyse statique de sécurité | `uv run bandit -c pyproject.toml -r src/chsa_triage` |
+| Bandit | analyse statique de sécurité | `uv run bandit -c pyproject.toml -r src/clinical_triage` |
 | pip-audit | vulnérabilités des dépendances | `uv run pip-audit` |
 | pre-commit | vérifications avant commit | `uv run pre-commit install` |
 
@@ -158,10 +158,10 @@ vérifie qu'elle démarre, répond, et refuse un appel sans clé**.
 |---|---|---|
 | 1 | Dataset médical bilingue | [`data/processed/`](data/processed) et le Hugging Face Hub |
 | 2 | Modèle spécialisé (SFT + LoRA, puis DPO) | Hugging Face Hub, cartes dans `reports/` |
-| 3 | Endpoint de démonstration | [`deploy/`](deploy/README.md) |
+| 3 | Endpoint de démonstration | [`infra/`](deploy/README.md) |
 | 4 | Pipeline CI/CD | [`.github/workflows/`](.github/workflows) |
 | 5 | Rapport technique | [`reports/rapport_technique.pdf`](reports/rapport_technique.pdf) |
-| 6 | Support de soutenance | `reports/soutenance_chsa.pptx` |
+| 6 | Support de soutenance | `reports/soutenance_triage.pptx` |
 
 ## Licence
 

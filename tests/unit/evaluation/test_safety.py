@@ -49,7 +49,7 @@ def test_a_deferred_consultation_may_point_to_the_general_practitioner():
     answer = (
         "Niveau de priorité : CONSULTATION_DIFFEREE\n"
         "Justification : Infection virale bénigne.\n"
-        "Recommandation : Orienter vers le médecin traitant et donner des consignes de surveillance."
+        "Recommandation : Orienter vers le médecin traitant et donner des conseils de surveillance."
     )
     assert not check(benign, answer, "CONSULTATION_DIFFEREE").inconsistent_recommendation
 
